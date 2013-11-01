@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jms="http://www.springframework.org/schema/jms"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+		http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-3.2.xsd">
+
+	<!-- Escanea el paquete base para injeccion de dependencias -->
+	<context:component-scan base-package="com.omkbron.spring.jms.example" />
+
+	<!-- Se obtiene una connectionFactory de ActiveMQ -->
+	<bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+		<property name="brokerURL" value="tcp://localhost:61616" />
+	</bean>
+
+	<!-- Se crean el bean JmsTemplate proporcionandole la connectionFactory 
+		y asignandole una colo default -->
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="connectionFactory" />
+		<property name="defaultDestination" ref="producerQueue" />
+	</bean>
+
+	<!-- COLAS -->
+	<bean id="producerQueue" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="msg.producer.queue" />
+	</bean>
+
+	<bean id="consumerQueue" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="msg.consumer.queue" />
+	</bean>
+
+	<!-- LISTENERS -->
+	<!-- Receptor de confirmacion(Consumidor) -->
+	<jms:listener-container>
+		<jms:listener destination="msg.consumer.queue" ref="messageConfirmer" method="confirm"/>
+	</jms:listener-container>
+
+	<!-- Consume la cola de produccion y redirige a la cola de consumo -->
+	
+	<jms:listener-container>
+		<jms:listener destination="msg.producer.queue" ref="messageService" method="receiveAndConfirm" response-destination="msg.consumer.queue"/>
+	</jms:listener-container>
+
+</beans>
