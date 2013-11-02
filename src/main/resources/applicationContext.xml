@@ -26,15 +26,15 @@
 		<constructor-arg value="msg.producer.queue" />
 	</bean>
 
-	<bean id="consumerQueue" class="org.apache.activemq.command.ActiveMQQueue">
-		<constructor-arg value="msg.consumer.queue" />
-	</bean>
+<!-- 	<bean id="consumerQueue" class="org.apache.activemq.command.ActiveMQQueue"> -->
+<!-- 		<constructor-arg value="msg.consumer.queue" /> -->
+<!-- 	</bean> -->
 
 	<!-- LISTENERS -->
 	<!-- Receptor de confirmacion(Consumidor) -->
-	<jms:listener-container>
-		<jms:listener destination="msg.consumer.queue" ref="messageConfirmer" method="confirm"/>
-	</jms:listener-container>
+<!-- 	<jms:listener-container> -->
+<!-- 		<jms:listener destination="msg.consumer.queue" ref="messageConfirmer" method="confirm"/> -->
+<!-- 	</jms:listener-container> -->
 
 	<!-- Consume la cola de produccion y redirige a la cola de consumo -->
 	
